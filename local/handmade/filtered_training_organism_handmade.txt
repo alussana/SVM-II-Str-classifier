@@ -1,0 +1,10 @@
+176	H. sapiens	Homo sapiens
+103	T. therm.	Thermus thermophilus
+22	S. cerevisiae	Saccharomyces cerevisiae
+22	M. musculus	Mus musculus
+19	B. subtilis	Bacillus subtilis
+17	B. taurus	Bos taurus
+15	M. tubercul.	Mycobacterium tuberculosis
+13	G. stearoth.	Geobacillus stearothermophilus
+12	P. aerugin.	Pseudomonas aeruginosa
+422	Others	Others

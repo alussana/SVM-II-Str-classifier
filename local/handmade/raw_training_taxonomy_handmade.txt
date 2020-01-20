@@ -1,0 +1,5 @@
+639	Bacteria
+455	Eukaryota
+93	Archaea
+63	Viruses
+2	Other

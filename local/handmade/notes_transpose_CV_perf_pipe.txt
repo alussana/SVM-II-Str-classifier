@@ -1,0 +1,1 @@
+cat <(echo -e 'PPV_H\tPPV_E\tPPV_C\tTPR_H\tTPR_E\tTPR_C\tMCC_H\tMCC_E\tMCC_C\tSOV_H\tSOV_E\tSOV_C\tQ3\tSOV3') <(cat notes_CV_perf_SVM.txt | statTools --mean --std_err) | transpose

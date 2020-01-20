@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+
+import numpy as np
+
+def read_model(modelFile):
+	aa = []
+	with open(modelFile) as modelSource:
+		aa = []; H = 0; E = 0; c = 0; p = 0
+		for line in modelSource:
+			line = line.rstrip()
+			if line.startswith('>'):
+				if line[1] == 'H':
+					H = 1;	E = 0; c = 0; p = 0
+					helixTable = []
+				elif line[1] == 'E':
+					H = 0; E = 1; c = 0; p = 0
+					strandTable = []
+				elif line[1] == 'c':
+					H = 0; E = 0; c = 1; p = 0
+					coilTable = []
+				elif line[1] == 'p':
+					H = 0; E = 0; c = 0; p = 1
+					priorsTable = []
+			elif H == 1 and E == 0 and c == 0 and p == 0 and line.startswith('#') == False:
+				info = line.split('\t')
+				aa.append(info[0])
+				helixTable.append(info[1:])
+			elif H == 0 and E == 1 and c == 0 and p == 0 and line.startswith('#') == False:
+				info = line.split('\t')
+				strandTable.append(info[1:])
+			elif H == 0 and E == 0 and c == 1 and p == 0 and line.startswith('#') == False:
+				info = line.split('\t')
+				coilTable.append(info[1:])
+			elif H == 0 and E == 0 and c == 0 and p == 1 and line.startswith('#') == False:
+				info = line.split('\t')
+				priorsTable.append(info[1:])
+		windowSize = len(helixTable[0])
+		helixTable = np.array(helixTable).astype(float)
+		strandTable = np.array(strandTable).astype(float)
+		coilTable = np.array(coilTable).astype(float)
+		priorsTable = np.array(priorsTable).astype(float)
+		#H_rate = sum(helixTable[windowSize // 2])
+		#E_rate = sum(strandTable[windowSize // 2])
+		#c_rate = sum(coilTable[windowSize // 2])
+		H_rate = []; E_rate = []; c_rate = []
+		for j in range(len(helixTable[0])):
+			n = 0
+			for i in range(len(helixTable)):
+				n = n + helixTable[i][j]
+			H_rate.append(n)
+		for j in range(len(strandTable[0])):
+			n = 0
+			for i in range(len(strandTable)):
+				n = n + strandTable[i][j]
+			E_rate.append(n)
+		for j in range(len(coilTable[0])):
+			n = 0
+			for i in range(len(coilTable)):
+				n = n + coilTable[i][j]
+			c_rate.append(n)
+	return(helixTable, strandTable, coilTable, priorsTable, aa, windowSize, H_rate, E_rate, c_rate)
+
+def readPssm(pssmFile):
+	dsspFile = open(pssmFile)
+	dsspInfo = []
+	for line in dsspFile:
+		dsspInfo.append(line.strip())
+	dsspFile.close()
+	aa = dsspInfo[2].split()[:20]
+	aaDict = dict(zip(aa, list(range(20))))
+	pssmValues = []
+	for position in range(3, len(dsspInfo) - 6):
+		dsspLine = dsspInfo[position].split()[2:]
+		dsspLine = dsspLine[20:40]
+		dsspLine = [float(i) / 100 for i in dsspLine]
+		pssmValues.append(dsspLine)
+	pssmValues = np.array(pssmValues).astype(float)
+	return(pssmValues, aaDict)
+
+def impute_II_str(pssm_dir, idList, out_dir, modelFile):
+	helixTable, strandTable, coilTable, priorsTable, aa, windowSize, H_rate, E_rate, c_rate = read_model(modelFile)
+	with open(idList) as ids:
+		for prot_id in ids:
+			prot_id = prot_id.rstrip()
+			pssm, aaDict = readPssm(pssm_dir + '/' + prot_id + '.pssm')
+			dssp = ""
+			for pssm_pos in range(len(pssm)):
+				H = 0; E = 0; c = 0
+				for win_pos in range(-windowSize // 2 + 1, windowSize // 2 + 1):
+					if pssm_pos + win_pos >= 0 and pssm_pos + win_pos < len(pssm):
+						for a in range(len(aa)):
+							aa_pssm_index = aaDict[aa[a]]
+							residue_rate = pssm[pssm_pos + win_pos][aa_pssm_index]
+							H = H + residue_rate * helixTable[a][win_pos + windowSize // 2]
+							E = E + residue_rate * strandTable[a][win_pos + windowSize // 2]
+							c = c + residue_rate * coilTable[a][win_pos + windowSize // 2]
+				if H > E:
+					if H > c:
+						dssp = dssp + 'H'
+					else:
+						dssp = dssp + '-'
+				else:
+					if E > c:
+						dssp = dssp + 'E'
+					else:	
+						dssp = dssp + '-'
+			print_dssp(dssp, out_dir, prot_id)
+
+def print_dssp(dssp, out_dir, prot_id):
+	outFile = out_dir + '/' + prot_id + '.dssp'
+	destination = open(outFile, 'w')
+	print('>' + prot_id, file = destination)
+	print(dssp, file = destination)
+	destination.close()
+
+if __name__ == '__main__':
+	import argparse as ap
+	parser = ap.ArgumentParser(description='Impute II Structure with GOR model')
+	parser.add_argument('--pssm_dir', dest='pssm_dir', help='pssm directory')
+	parser.add_argument('--id_list', dest='id_list', help='list of file names without extension')
+	parser.add_argument('--model', dest='model_file', help='output of gor_training')
+	parser.add_argument('--out_dir', dest='out_dir', help='output directory for predicted dssp files')
+	args = parser.parse_args()
+	pssm_dir = args.pssm_dir
+	idList = args.id_list
+	out_dir = args.out_dir
+	modelFile = args.model_file
+
+	impute_II_str(pssm_dir, idList, out_dir, modelFile)

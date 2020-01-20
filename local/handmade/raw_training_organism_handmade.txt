@@ -1,0 +1,10 @@
+216	H. sapiens	Homo sapiens
+128	E. coli	Escherichia coli
+38	T. thermophilus	Thermus thermophilus
+32	S. cerevisiae	Saccharomyces cerevisiae
+32	Mus musculus	Mus musculus
+32	B. subtilis	Bacillus subtilis
+31	T. maritima	Thermotoga maritima
+20	M. tuberculosis	Mycobacterium tuberculosis
+20	P. aeruginosa	Pseudomonas aeruginosa
+696	Other	Other

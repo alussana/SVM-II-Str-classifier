@@ -1,0 +1,28 @@
+sov_performance \
+        --real_dssp_dir training_set/dssp \
+        --imputed_dssp_dir cross_validation/profile_gor/testing3 \
+        --window_size 17 \
+        --id_list cross_validation/testing3_ids \
+        --out cross_validation/profile_gor/testing3_gor_sov_performance.txt
+mean_Q3: 0.6404605025323913     std_err_Q3: 0.00791227655345731
+[[0.79389996 0.13452623 0.07157381]
+ [0.17568    0.6912     0.13312   ]
+ [0.26951563 0.24974078 0.48074359]]
+acc_score: 0.6419321621368614
+H
+        MCC: 0.5413261686364244
+        PPV: 0.6732652779693751
+        TPR: 0.7938999593330622
+E
+        MCC: 0.4327088264453506
+        PPV: 0.4622298309437192
+        TPR: 0.6912
+C
+        MCC: 0.43948761991433977
+        PPV: 0.791295867365598
+        TPR: 0.48074359354169754
+SOV
+        H: 68.33385343214867    1.6502446463979592  
+        E: 61.83205804248716    2.078251804073596   
+        C: 46.3475290644009     1.2043877657625097  
+        99_3: 59.32202072054309 0.9905965498033187

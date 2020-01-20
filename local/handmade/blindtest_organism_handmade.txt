@@ -1,0 +1,10 @@
+42	H. sapiens	Homo sapiens
+8	M. musculus	Mus musculus
+7	S. cerevisiae	Saccharomyces cerevisiae
+6	E. coli	Escherichia coli
+4	S. aureus	Staphylococcus aureus
+4	R. norvegicus	Rattus norvegicus
+4	P. aeruginosa	Pseudomonas aeruginosa
+4	M. tuberculosis	Mycobacterium tuberculosis
+3	N. meningitidis	Neisseria meningitidis 
+70	Others	Others
